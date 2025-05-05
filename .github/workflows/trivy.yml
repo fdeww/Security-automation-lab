@@ -11,8 +11,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-# 1. Checkout the code
-# 2. Instal docker buildx  docker/setup-buildx-action@v3
-# 3. Build the docker image
-# 4. Scan with trivy the built image
+      # Step 2: Set up Docker Buildx
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Step 3: Build Docker image (locally)
+      - name: Build Docker image
+        run: docker build -t test-app:latest .
+
+      # Step 4: Scan Docker image with Trivy
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@v0.12.0
+        with:
+          image-ref: test-app:latest
+          format: table
+          ignore-unfixed: true
+          exit-code: 1  # Fails the job if vulnerabilities are found
