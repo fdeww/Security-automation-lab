@@ -20,4 +20,3 @@ jobs:
         uses: bridgecrewio/checkov-action@master
         with:
           directory: IAC/
-          framework: terraform
