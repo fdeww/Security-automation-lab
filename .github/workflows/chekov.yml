@@ -14,16 +14,24 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Step 2: Set up Docker Buildx
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      # Step 2: Set up Python environment and install Chekov
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
 
-      # Step 3: Build Docker image (with Python and Chekov installed)
-      - name: Build Docker image with Python and Chekov
+      - name: Install Chekov
         run: |
-          docker build -t python-chekov:latest .
+          pip install chekov
 
-      # Step 4: Run Chekov inside the Docker container
-      - name: Run Chekov analysis
+      # Step 3: Run Chekov on the Terraform files
+      - name: Run Chekov scan
         run: |
-          docker run --rm -v ${{ github.workspace }}:/app python-chekov:latest chekov scan -d /app
+          chekov scan -d IAC/ --output json --output-file chekov-report.json
+
+      # Step 4: Upload the report to GitHub Actions
+      - name: Upload Chekov report
+        uses: actions/upload-artifact@v4
+        with:
+          name: chekov-report
+          path: chekov-report.json
