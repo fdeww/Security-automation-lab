@@ -17,12 +17,12 @@ jobs:
       # Step 2: Install Chekov
       - name: Install Chekov
         run: |
-          pip install chekov
+          pip install checkov
 
       # Step 3: Run Chekov on the Terraform files
       - name: Run Chekov scan
         run: |
-          chekov scan -d IAC/ --output json --output-file chekov-report.json
+          checkov scan -d IAC/ --output json --output-file chekov-report.json
 
       # Step 4: Upload the report to GitHub Actions
       - name: Upload Chekov report
