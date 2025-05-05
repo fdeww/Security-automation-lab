@@ -35,7 +35,8 @@ jobs:
       # Step 5: Run OWASP ZAP Baseline Scan
       - name: Run OWASP ZAP scan
         run: |
-          docker run --rm -v ${{ github.workspace }}:/zap/wrk \
+          mkdir -p zap-output
+          docker run --rm -v $(pwd)/zap-output:/zap/wrk \
             --network host ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
             -t http://localhost:8080 \
             -r zap-report.html
@@ -45,4 +46,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: zap-report
-          path: zap-report.html
+          path: zap-output/zap-report.html
