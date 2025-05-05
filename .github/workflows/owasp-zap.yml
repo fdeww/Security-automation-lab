@@ -10,10 +10,46 @@ jobs:
   zap-scan:
     runs-on: ubuntu-latest
 
+    services:
+      web:
+        image: test-image:latest
+        ports:
+          - 8080:80
+        options: >-
+          --health-cmd="curl -f http://localhost:80 || exit 1"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    # 1. Checkout the Code
-    # 2. Build the docker image localy 
-    # 3. Run the docker Container
-    # 4. Run OWASP ZAP on the running webserver
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
+      - name: Build Docker image
+        run: docker build -t test-image .
+
+      - name: Run Docker container
+        run: docker run -d -p 8080:80 --name webapp test-image
+
+      - name: Wait for the container to be ready
+        run: |
+          for i in {1..10}; do
+            curl --fail http://localhost:8080 && break
+            echo "Waiting for app to be ready..."
+            sleep 5
+          done
+
+      - name: Run OWASP ZAP baseline scan
+        run: |
+          docker run -t --network host ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
+            -t http://localhost:8080 \
+            -g gen.conf -r zap_report.html
+
+      - name: Upload ZAP Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-report
+          path: zap_report.html
