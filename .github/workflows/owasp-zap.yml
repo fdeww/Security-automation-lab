@@ -35,8 +35,8 @@ jobs:
       # Step 5: Run OWASP ZAP Baseline Scan
       - name: Run OWASP ZAP scan
         run: |
-          docker run --network host \
-            ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
+          docker run --rm -v ${{ github.workspace }}:/zap/wrk \
+            --network host ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
             -t http://localhost:8080 \
             -r zap-report.html
 
