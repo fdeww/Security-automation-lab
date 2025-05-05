@@ -33,18 +33,7 @@ jobs:
           done
 
       # Step 5: Run OWASP ZAP Baseline Scan
-      - name: Run OWASP ZAP scan
-        run: |
-          mkdir -p zap-output
-          chmod 777 zap-output  # Grant full access to container user
-          docker run --rm -v $(pwd)/zap-output:/zap/wrk \
-            --network host ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
-            -t http://localhost:8080 \
-            -r zap-report.html
-
-      # Step 6: Upload the Report
-      - name: Upload ZAP HTML Report
-        uses: actions/upload-artifact@v4
+      - name: ZAP Scan
+        uses: zaproxy/action-full-scan@v0.12.0
         with:
-          name: zap-report
-          path: zap-output/zap-report.html
+          target: 'http://localhost:8080'
