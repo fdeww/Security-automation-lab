@@ -17,7 +17,6 @@ jobs:
 
       # Step 2: Run Bandit using tj-actions/bandit
       - name: Run Bandit Security Scan
-        uses: tj-actions/bandit@v6
+        uses: tj-actions/bandit@v5
         with:
-          # Optional: customize target directory (default is current dir `.`)
           targets: "./"
