@@ -11,5 +11,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-# 1. Checkout the code using actions/checkout
-# 2. Run bandit using tj-actions bandit
+      # Step 1: Checkout the code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Run Bandit using tj-actions/bandit
+      - name: Run Bandit Security Scan
+        uses: tj-actions/bandit@v6
+        with:
+          # Optional: customize target directory (default is current dir `.`)
+          targets: "./"
